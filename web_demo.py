@@ -2,8 +2,13 @@ from transformers import AutoModel, AutoTokenizer
 import gradio as gr
 import mdtex2html
 
-tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True)
-model = AutoModel.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True).half().cuda()
+# 指定模型的位置，就是你在Hugging Face Hub上克隆下来那个模型
+mypath="D:\models\chatglm-6b"
+# 导入依赖
+tokenizer = AutoTokenizer.from_pretrained(mypath, trust_remote_code=True)
+# model = AutoModel.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True).half().cuda()
+model = AutoModel.from_pretrained(mypath, trust_remote_code=True).half().quantize(4).cuda()
+
 model = model.eval()
 
 """Override Chatbot.postprocess"""
@@ -98,4 +103,5 @@ with gr.Blocks() as demo:
 
     emptyBtn.click(reset_state, outputs=[chatbot, history], show_progress=True)
 
-demo.queue().launch(share=False, inbrowser=True)
+# demo.queue().launch(share=False, inbrowser=True)
+demo.queue().launch(share=True, inbrowser=True)
